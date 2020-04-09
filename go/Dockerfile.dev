@@ -1,0 +1,23 @@
+# ベースとなるDockerイメージ指定
+FROM golang:1.13
+# コンテナ内に作業ディレクトリを作成
+RUN mkdir /go/src/app
+# コンテナログイン時のディレクトリ指定
+WORKDIR /go/src/app
+# ホストのファイルをコンテナの作業ディレクトリに移行
+ADD . /go/src/app
+#モジュール管理
+ENV GO111MODULE=on
+# モジュールダウンロード
+RUN go mod download
+#flesh download
+RUN go get github.com/pilu/fresh
+#環境変数
+ARG GOPATH=/go
+ARG GOROOT=/usr/local/go
+ARG POSTGRES_USER=root
+ARG POSTGRES_PASSWORD=password
+ARG POSTGRES_DB=go_app_db
+ARG POSTGRES_DB_ENDPOINT=http://postgres:5432
+#liston
+EXPOSE 8080
