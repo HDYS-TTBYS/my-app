@@ -13,5 +13,5 @@ build:
 deploy:
   kubectl:
     manifests:
-      - skaffold/skaffold_my-app_back_nginx.yml
-      - skaffold/skaffold_my-app_front_nginx.yml
+      - kube_skaffold/skaffold_my-app_back_nginx.yml
+      - kube_skaffold/skaffold_my-app_front_nginx.yml
