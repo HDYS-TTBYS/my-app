@@ -1,16 +1,23 @@
 package main
 
 import (
-	"net/http"
+	"app/handlers"
+	"fmt"
 
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 func main() {
 	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
-	e.GET("/api/test", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello World!!")
-	})
+	// Routes
+	e.GET("/", handlers.Hello)
+
+	// Start server
 	e.Logger.Fatal(e.Start(":8080"))
+
+	fmt.Println()
 }

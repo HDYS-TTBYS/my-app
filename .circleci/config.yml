@@ -1,5 +1,31 @@
 version: 2
 jobs:
+  test:
+    machine:
+      image: circleci/classic:edge
+    steps:
+      - checkout
+
+      - run:
+          name: docker-compose up -d
+          command: docker-compose up -d
+
+      - run:
+          name: sleep
+          command: sleep 5
+
+      - run:
+          name: start fresh with go
+          command: docker-compose exec go_app fresh
+
+      - run:
+          name: yarn test
+          command: cd react-app && yarn test
+
+      - run:
+          name: docker-compose down
+          command: docker-compose down
+
   build:
     docker:
       - image: docker:19.03
@@ -57,10 +83,13 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - build
-      - deploy-production:
+      - test:
+          filters:
+            branches:
+              only: master
+      - build:
           requires:
-            - build
+            - test
           filters:
             branches:
               only: master

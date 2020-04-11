@@ -14,12 +14,15 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
   go_app:
-    build: "./go"
+    build:
+      context: ./go
+      dockerfile: Dockerfile.dev
+    # build: "./go"
     tty: true
     depends_on:
       - postgres
-    # volumes:
-    #   - ./go:/go/src/app
+    volumes:
+      - ./go:/go/src/app
     ports:
       - 8080:8080
     environment:
@@ -38,15 +41,15 @@ services:
       - BACKEND_PORT=http://go_app:8080
     depends_on:
       - go_app
-  front_nginx:
-    build: "./react-app"
-    ports:
-      - 3001:80
-    environment:
-      - NGINX_LISTEN_PORT＝80
-      - BACKEND_PORT=http://back_nginx:80
-    depends_on:
-      - go_app
+  # front_nginx:
+  #   build: "./react-app"
+  #   ports:
+  #     - 3001:80
+  #   environment:
+  #     - NGINX_LISTEN_PORT＝80
+  #     - BACKEND_PORT=http://back_nginx:80
+  #   depends_on:
+  #     - go_app
 
 volumes:
   postgres_data:
