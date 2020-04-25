@@ -1,0 +1,73 @@
+version: "3"
+services:
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=go_app_db
+    tty: true
+    restart: always
+    user: root
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  go_app:
+    build:
+      context: ./go
+      dockerfile: Dockerfile.dev
+    # build: "./go"
+    tty: true
+    depends_on:
+      - postgres
+    volumes:
+      - ./go:/go/src/app
+    ports:
+      - 8080:8080
+    environment:
+      - GOPATH=/go
+      - GOROOT=/usr/local/go
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=go_app_db
+      - POSTGRES_DB_ENDPOINT=http://postgres:5432
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./data/minio/data:/export
+      - ./data/minio/config:/root/.minio
+    environment:
+      MINIO_ACCESS_KEY: hdys_minio_access_key
+      MINIO_SECRET_KEY: hdys_minio_secret_key
+    command: server /export
+
+  back_nginx:
+    build: ./nginx_back
+    ports:
+      - 8081:80
+    environment:
+      - NGINX_LISTEN_PORT＝80
+      - BACKEND_PORT=http://go_app:8080
+    depends_on:
+      - go_app
+
+  front_nginx:
+    build:
+      context: ./react-app
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3001:80
+    environment:
+      - NGINX_LISTEN_PORT＝80
+      - BACKEND_PORT=http://back_nginx:80
+    tty: true
+    depends_on:
+      - go_app
+
+volumes:
+  postgres_data:

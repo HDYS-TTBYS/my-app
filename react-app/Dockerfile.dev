@@ -1,0 +1,7 @@
+FROM node:12.14.1
+# 作業フォルダを作成しnpm設定
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+# ソースを作業フォルダにコピーして、ビルド
+COPY . /usr/src/app/

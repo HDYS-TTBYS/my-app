@@ -1,0 +1,17 @@
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: my-app
+build:
+  artifacts:
+    - image: hdys/my-app-go-app
+      context: go
+    - image: hdys/my-app-back-nginx
+      context: nginx_back
+    - image: hdys/my-app-front-nginx
+      context: react-app
+deploy:
+  kubectl:
+    manifests:
+      - kube_skaffold/skaffold_my-app_back_nginx.yml
+      - kube_skaffold/skaffold_my-app_front_nginx.yml
